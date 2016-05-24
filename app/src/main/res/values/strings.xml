@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Location Track Client</string>
+    <string name="location_updated_message">location changexx</string>
 </resources>
