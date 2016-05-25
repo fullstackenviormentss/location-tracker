@@ -3,6 +3,7 @@ package com.gulzar.locationtracker;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
@@ -43,6 +44,8 @@ public class BackgroundLocationService extends Service implements
 
     private LocationRequest mLocationRequest;
 
+    private String mUID;
+
     //Getting Firebase Reference intial i.e https://employee-tracker123.firebaseio.com/EmployeeID
     DatabaseReference mRef;
     //Getting FireBase Reference i.e https://employee-tracker123.firebaseio.com/EmployeeID/<User Id>
@@ -68,6 +71,11 @@ public class BackgroundLocationService extends Service implements
         super.onCreate();
 
       buildGoogleApiClient();
+      //Get UID from SharedPreference !!
+      mUID= ReadFromSharedPreference();
+      Log.i(TAG,"UID"+mUID);
+
+
       intializefirebase();
 
         Log.i(TAG, "onCreate");
@@ -77,11 +85,19 @@ public class BackgroundLocationService extends Service implements
         servicesAvailable = servicesConnected();
     }
 
+    private String ReadFromSharedPreference() {
+        final String MyPREFERENCES = "MySavedUID" ;
+        SharedPreferences prefs = getSharedPreferences(MyPREFERENCES,
+                MODE_PRIVATE);
+        String string = prefs.getString("UID","6666666");//Default Value
+        return string;
+    }
+
     private void intializefirebase() {
 
         mRef = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl("https://employee-tracker123.firebaseio.com/EmployeeID");
-        EmployeeIDRef=mRef.child("1459109");
+        EmployeeIDRef=mRef.child(mUID);
 
 
     }
@@ -135,17 +151,17 @@ public class BackgroundLocationService extends Service implements
         // Report to the UI that the location was updated
         String msg = Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude());
-        updatefirebase(location.getLatitude(),location.getLongitude());
+        updateFirebase(location.getLatitude(),location.getLongitude());
         Log.d("debug", msg);
     }
 
-    private void updatefirebase(Double lat,Double lang) {
+    private void updateFirebase(Double lat,Double lang) {
 
         //Getting current date and time
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String currentDateandTime = sdf.format(new Date());
 
-        EmployeeIDRef.child("id").setValue("1459109");
+        EmployeeIDRef.child("id").setValue(mUID);
         EmployeeIDRef.child("lat").setValue(lat);
         EmployeeIDRef.child("lang").setValue(lang);
         EmployeeIDRef.child("time").setValue(currentDateandTime);
@@ -156,12 +172,6 @@ public class BackgroundLocationService extends Service implements
     public IBinder onBind(Intent intent) {
         return mBinder;
     }
-
-    public String getTime() {
-        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return mDateFormat.format(new Date());
-    }
-
 
 
     @Override
