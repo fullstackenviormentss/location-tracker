@@ -40,11 +40,8 @@ public class BackgroundLocationService extends Service implements
     private String TAG="gulxxx";
 
     private LocationRequest mLocationRequest;
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 99e9cd74855c7670dfcf924315580f674facf5c2
+    
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
 
@@ -155,7 +152,7 @@ public class BackgroundLocationService extends Service implements
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1000); // Update location every second
+        mLocationRequest.setInterval(10000); // Update location every second
 
 
         LocationServices.FusedLocationApi.requestLocationUpdates(
