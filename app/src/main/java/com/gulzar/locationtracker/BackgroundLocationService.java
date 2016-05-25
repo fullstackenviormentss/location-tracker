@@ -40,8 +40,11 @@ public class BackgroundLocationService extends Service implements
     private String TAG="gulxxx";
 
     private LocationRequest mLocationRequest;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 99e9cd74855c7670dfcf924315580f674facf5c2
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
 
