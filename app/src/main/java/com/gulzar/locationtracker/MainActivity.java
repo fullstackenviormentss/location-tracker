@@ -1,5 +1,6 @@
 package com.gulzar.locationtracker;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,11 +13,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -24,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     //UI COMPONENTS
     private Button mServiceButton;
     private EditText mUID;
+    private EditText mPswd;
+    Toolbar mToolbar;
 
     //SHARED PREFERENCE COMPONENT
     public static final String MyPREFERENCES = "MySavedUID" ;
@@ -33,15 +38,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(!isMyServiceRunning(BackgroundLocationService.class)){
         //Intializing FireBase
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        //Displaying Dialog Box to stop it
+            //showDialog(getBaseContext());
+            }
+
+
         //Intializing UI
         mServiceButton=(Button)findViewById(R.id.startservice);
         mUID=(EditText)findViewById(R.id.input_id);
+        mToolbar=(Toolbar)findViewById(R.id.tool_bar);
+        mPswd=(EditText)findViewById(R.id.input_pswd);
+
+        if(isMyServiceRunning(BackgroundLocationService.class))
+            EnableDisableUI(false);
+
+
+        //Adding toolbar
+        setSupportActionBar(mToolbar);
 
 
     }
-
     /**
      * This method is called when the user clicks the submit button!!
      */
@@ -56,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             SaveToSharedPreference(mUID.getText().toString());
             startService(new Intent(getBaseContext(),BackgroundLocationService.class));
             Toast.makeText(getBaseContext(),"Service started",Toast.LENGTH_SHORT).show();
+                    EnableDisableUI(false);
                 }
                 else if(!checkInternetConnectivity(getBaseContext()))
                     displaySnackBarNoConnectivity();
@@ -155,5 +175,60 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("UID",UID);
         editor.commit();
 
+    }
+
+    /**
+     * Service is running or not
+     */
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void EnableDisableUI(boolean flag)
+    {
+        if(!flag)
+        {
+            mServiceButton.setEnabled(false);
+            mUID.setEnabled(false);
+            mPswd.setEnabled(false);
+        }
+        else
+        {
+            mServiceButton.setEnabled(true);
+            mUID.setEnabled(true);
+            mPswd.setEnabled(true);
+        }
+    }
+    private void showDialog(final Context context)
+    {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+        builder1.setMessage("Service is running. Yes to stop it now");
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        stopService(new Intent(context,BackgroundLocationService.class));
+                        EnableDisableUI(true);
+                        dialog.cancel();
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 }
