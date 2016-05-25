@@ -38,11 +38,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if(!isMyServiceRunning(BackgroundLocationService.class)){
         //Intializing FireBase
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        //Displaying Dialog Box to stop it
-            //showDialog(getBaseContext());
+
             }
 
 
@@ -52,8 +52,15 @@ public class MainActivity extends AppCompatActivity {
         mToolbar=(Toolbar)findViewById(R.id.tool_bar);
         mPswd=(EditText)findViewById(R.id.input_pswd);
 
-        if(isMyServiceRunning(BackgroundLocationService.class))
+
+
+
+        if(isMyServiceRunning(BackgroundLocationService.class)){
             EnableDisableUI(false);
+            //Displaying Dialog Box to stop it
+            showDialog(getBaseContext());
+
+        }
 
 
         //Adding toolbar
@@ -206,29 +213,47 @@ public class MainActivity extends AppCompatActivity {
     }
     private void showDialog(final Context context)
     {
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-        builder1.setMessage("Service is running. Yes to stop it now");
-        builder1.setCancelable(true);
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
+                MainActivity.this);
+        alertDialog2.setCancelable(false);
+// Setting Dialog Title
+        alertDialog2.setTitle("Location is Monitored");
 
-        builder1.setPositiveButton(
-                "Yes",
+// Setting Dialog Message
+        alertDialog2.setMessage("Stop monitoring?");
+
+// Setting Icon to Dialog
+        alertDialog2.setIcon(android.R.drawable.ic_dialog_alert);
+
+// Setting Positive "Yes" Btn
+        alertDialog2.setPositiveButton("YES",
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to execute after dialog
+
+                        Toast.makeText(getApplicationContext(),
+                                "Location Monitoring Stopped", Toast.LENGTH_SHORT)
+                                .show();
                         stopService(new Intent(context,BackgroundLocationService.class));
                         EnableDisableUI(true);
-                        dialog.cancel();
                     }
                 });
 
-        builder1.setNegativeButton(
-                "No",
+// Setting Negative "NO" Btn
+        alertDialog2.setNegativeButton("NO",
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to execute after dialog
+                        Toast.makeText(getApplicationContext(),
+                                "You are still being monitored", Toast.LENGTH_SHORT)
+                                .show();
                         dialog.cancel();
                     }
                 });
 
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
+// Showing Alert Dialog
+
+        alertDialog2.show();
+
     }
 }
