@@ -3,6 +3,8 @@ package com.gulzar.locationtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -42,10 +44,27 @@ public class MainActivity extends AppCompatActivity {
             if(mUID.getText()==null||mUID.getText().length()!=7)
                Toast.makeText(getBaseContext(),"Enter correct ID",Toast.LENGTH_SHORT).show();
                 else{
+                if(checkInternetConnectivity(getBaseContext()))
+                {
             SaveToSharedPreference(mUID.getText().toString());
             startService(new Intent(getBaseContext(),BackgroundLocationService.class));
             Toast.makeText(getBaseContext(),"Service started",Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(getBaseContext(),"NO INTERNET CONNECTION",Toast.LENGTH_SHORT).show();
+
             }
+    }
+
+    private boolean checkInternetConnectivity(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+
     }
 
 
