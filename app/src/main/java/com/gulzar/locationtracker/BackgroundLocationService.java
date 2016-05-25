@@ -20,6 +20,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,7 +43,12 @@ public class BackgroundLocationService extends Service implements
 
     private LocationRequest mLocationRequest;
 
-    
+    //Getting Firebase Reference intial i.e https://employee-tracker123.firebaseio.com/EmployeeID
+    DatabaseReference mRef;
+    //Getting FireBase Reference i.e https://employee-tracker123.firebaseio.com/EmployeeID/<User Id>
+    DatabaseReference EmployeeIDRef;
+
+
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
 
@@ -61,11 +68,22 @@ public class BackgroundLocationService extends Service implements
         super.onCreate();
 
       buildGoogleApiClient();
+      intializefirebase();
+
         Log.i(TAG, "onCreate");
 
         mInProgress = false;
 
         servicesAvailable = servicesConnected();
+    }
+
+    private void intializefirebase() {
+
+        mRef = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://employee-tracker123.firebaseio.com/EmployeeID");
+        EmployeeIDRef=mRef.child("1459109");
+
+
     }
 
 
@@ -117,7 +135,21 @@ public class BackgroundLocationService extends Service implements
         // Report to the UI that the location was updated
         String msg = Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude());
+        updatefirebase(location.getLatitude(),location.getLongitude());
         Log.d("debug", msg);
+    }
+
+    private void updatefirebase(Double lat,Double lang) {
+
+        //Getting current date and time
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String currentDateandTime = sdf.format(new Date());
+
+        EmployeeIDRef.child("id").setValue("1459109");
+        EmployeeIDRef.child("lat").setValue(lat);
+        EmployeeIDRef.child("lang").setValue(lang);
+        EmployeeIDRef.child("time").setValue(currentDateandTime);
+
     }
 
     @Override
@@ -152,7 +184,7 @@ public class BackgroundLocationService extends Service implements
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(10000); // Update location every second
+        mLocationRequest.setInterval(10000); // Update location every 10 econd
 
 
         LocationServices.FusedLocationApi.requestLocationUpdates(
