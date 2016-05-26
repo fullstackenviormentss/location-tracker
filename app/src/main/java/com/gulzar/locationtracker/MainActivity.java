@@ -1,5 +1,6 @@
 package com.gulzar.locationtracker;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +15,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import android.widget.ToggleButton;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG ="gulzar";
     //UI COMPONENTS
     private Button mServiceButton;
     private EditText mUID;
@@ -39,11 +43,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(!isMyServiceRunning(BackgroundLocationService.class)){
-        //Intializing FireBase
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
-            }
+        if(!isMyServiceRunning(BackgroundLocationService.class))
+        {
+        //Intializing FireBase once
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }
 
 
         //Intializing UI
@@ -54,10 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+        //If service is running before disables UI and displays a DialogBox
         if(isMyServiceRunning(BackgroundLocationService.class)){
             EnableDisableUI(false);
-            //Displaying Dialog Box to stop it
             showDialog(getBaseContext());
 
         }
@@ -71,30 +75,43 @@ public class MainActivity extends AppCompatActivity {
     /**
      * This method is called when the user clicks the submit button!!
      */
-    public void clicked(View view)
+    public void SubmitClicked(View view)
     {
+
+            //Length of the Id should no be exactly 7 ie Reg ID
             if(mUID.getText()==null||mUID.getText().length()!=7)
                Toast.makeText(getBaseContext(),"Enter correct ID",Toast.LENGTH_SHORT).show();
                 else{
-                //Check INTERNET CONNECT AND GPS CONNECTIVITY
+                //Check INTERNET CONNECT AND GPS CONNECTIVITY VALID
                 if(checkInternetConnectivity(getBaseContext()) && checkGPSConnectivity())
                 {
+                    //THE UID is saved to SharedPreference
             SaveToSharedPreference(mUID.getText().toString());
+                    //BackgroudLocationService is started
             startService(new Intent(getBaseContext(),BackgroundLocationService.class));
+                    //Toast to display the start service
             Toast.makeText(getBaseContext(),"Service started",Toast.LENGTH_SHORT).show();
+                    //UI disabled when the service is started
                     EnableDisableUI(false);
                 }
-                else if(!checkInternetConnectivity(getBaseContext()))
-                    displaySnackBarNoConnectivity();
+                //Net Connectivity failure ;displays a snack bar.
+                else if(!checkInternetConnectivity(getBaseContext())){
+                    hideKeyboard(this);
+                    displaySnackBarNoConnectivity();}
+                //GPS disabled ; displays a dialogbox to enable it.
                      if(!checkGPSConnectivity())
                          showGPSDisabledAlertToUser();
 
             }
     }
 
+    /**
+     * Display the GPS enable DialogBox to user
+     */
     private void showGPSDisabledAlertToUser() {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
         alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
                 .setCancelable(false)
                 .setPositiveButton("Goto Settings Page To Enable GPS",
@@ -108,20 +125,25 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.setNegativeButton("Cancel",
                 new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int id){
-                        dialog.cancel();
                     }
                 });
+
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
 
     }
 
+    /**
+     * Method use to check the connectivity of GPS
+     * @return false when the GPS is Disabled
+     */
     private boolean checkGPSConnectivity() {
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            Toast.makeText(this, "GPS ENABLED", Toast.LENGTH_SHORT).show();
+            Log.i(TAG,"GPS ENABLED");
+            //Toast.makeText(this, "GPS ENABLED", Toast.LENGTH_SHORT).show();
             return true;
         }else{
             return false;
@@ -131,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Displays message when internet connectvity is absent
+     * Displays snack message when internet connectivity is absent
      */
     private void displaySnackBarNoConnectivity() {
 
@@ -140,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 .setAction("RETRY", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
 
                     }
                 });
@@ -185,7 +208,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Service is running or not
+     * Service is running or not checker
+     * Return true if the service is presently running.
      */
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -196,6 +220,11 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
+    /**
+     * Enables or Disables the UI component
+     * @param false to disable
+     */
     private void EnableDisableUI(boolean flag)
     {
         if(!flag)
@@ -211,12 +240,17 @@ public class MainActivity extends AppCompatActivity {
             mPswd.setEnabled(true);
         }
     }
+
+    /**
+     * Shows dialog to stop the current Service
+     * @param context
+     */
     private void showDialog(final Context context)
     {
         AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
                 MainActivity.this);
         alertDialog2.setCancelable(false);
-// Setting Dialog Title
+    // Setting Dialog Title
         alertDialog2.setTitle("Location is Monitored");
 
 // Setting Dialog Message
@@ -255,5 +289,18 @@ public class MainActivity extends AppCompatActivity {
 
         alertDialog2.show();
 
+    }
+    /**
+     * Hide Keyboard
+     */
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

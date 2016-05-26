@@ -58,11 +58,11 @@
             android:layout_height="match_parent"><Button
 
             android:background="@color/buttoncolor"
-            android:onClick="clicked"
+            android:onClick="SubmitClicked"
             android:id="@+id/startservice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/accept"
+            android:text="@string/submit"
             android:layout_alignParentRight="true"
             /></RelativeLayout>
 
