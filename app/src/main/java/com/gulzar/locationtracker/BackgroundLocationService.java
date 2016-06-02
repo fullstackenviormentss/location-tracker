@@ -1,5 +1,7 @@
 package com.gulzar.locationtracker;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -131,7 +133,7 @@ public class BackgroundLocationService extends Service implements
     {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "onStart");
-
+        Foreground();
         if(!servicesAvailable || mGoogleApiClient.isConnected() || mInProgress)
             return START_STICKY;
         buildGoogleApiClient();
@@ -142,6 +144,20 @@ public class BackgroundLocationService extends Service implements
         }
 
         return START_STICKY;
+    }
+
+    private void Foreground() {
+
+        Notification notification = new Notification.Builder(this)
+                .setContentTitle("Gulzar is awesome")
+                .setContentText("You are being watched by NSA")
+                .build();
+
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        startForeground(133, notification);
     }
 
 

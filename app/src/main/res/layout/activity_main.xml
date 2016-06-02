@@ -43,6 +43,7 @@
             >
 
             <EditText
+                android:visibility="gone"
                 android:inputType="numberPassword"
                 android:id="@+id/input_pswd"
                 android:layout_width="match_parent"
