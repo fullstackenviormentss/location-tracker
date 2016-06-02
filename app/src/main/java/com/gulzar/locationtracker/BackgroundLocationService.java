@@ -151,6 +151,7 @@ public class BackgroundLocationService extends Service implements
         Notification notification = new Notification.Builder(this)
                 .setContentTitle("Gulzar is awesome")
                 .setContentText("You are being watched by NSA")
+                .setSmallIcon(R.drawable.ic_mood_black_24dp)
                 .build();
 
 
