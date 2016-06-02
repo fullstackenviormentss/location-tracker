@@ -148,15 +148,23 @@ public class BackgroundLocationService extends Service implements
 
     private void Foreground() {
 
+
+        //Pending intent responds on click on notification takes back to Main Activity
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
         Notification notification = new Notification.Builder(this)
                 .setContentTitle("Gulzar is awesome")
                 .setContentText("You are being watched by NSA")
                 .setSmallIcon(R.drawable.ic_mood_black_24dp)
+                .setContentIntent(resultPendingIntent)
                 .build();
-
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         startForeground(133, notification);
     }
