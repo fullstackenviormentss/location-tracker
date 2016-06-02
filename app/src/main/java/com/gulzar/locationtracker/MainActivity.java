@@ -250,16 +250,16 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
                 MainActivity.this);
         alertDialog2.setCancelable(false);
-    // Setting Dialog Title
+       // Setting Dialog Title
         alertDialog2.setTitle("Location is Monitored");
 
-// Setting Dialog Message
+       // Setting Dialog Message
         alertDialog2.setMessage("Stop monitoring?");
 
-// Setting Icon to Dialog
+      // Setting Icon to Dialog
         alertDialog2.setIcon(android.R.drawable.ic_dialog_alert);
 
-// Setting Positive "Yes" Btn
+     // Setting Positive "Yes" Btn
         alertDialog2.setPositiveButton("YES",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-// Setting Negative "NO" Btn
+     // Setting Negative "NO" Btn
         alertDialog2.setNegativeButton("NO",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     /**
-     * Hide Keyboard
+     * Hides Keyboard when called
      */
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
