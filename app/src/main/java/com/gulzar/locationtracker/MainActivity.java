@@ -230,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
         if(!flag)
         {
             mServiceButton.setEnabled(false);
+            mUID.setText(ReadFromSharedPreference());
             mUID.setEnabled(false);
             mPswd.setEnabled(false);
         }
@@ -237,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
         {
             mServiceButton.setEnabled(true);
             mUID.setEnabled(true);
+            mUID.setText("");
             mPswd.setEnabled(true);
         }
     }
@@ -303,4 +305,12 @@ public class MainActivity extends AppCompatActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+    private String ReadFromSharedPreference() {
+        final String MyPREFERENCES = "MySavedUID" ;
+        SharedPreferences prefs = getSharedPreferences(MyPREFERENCES,
+                MODE_PRIVATE);
+        String string = prefs.getString("UID","6666666");//Default Value
+        return string;
+    }
+
 }
