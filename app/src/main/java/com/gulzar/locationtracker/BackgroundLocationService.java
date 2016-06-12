@@ -91,7 +91,7 @@ public class BackgroundLocationService extends Service implements
         final String MyPREFERENCES = "MySavedUID" ;
         SharedPreferences prefs = getSharedPreferences(MyPREFERENCES,
                 MODE_PRIVATE);
-        String string = prefs.getString("UID","anu solar");//Default Value
+        String string = prefs.getString("UID","6666666");//Default Value
         return string;
     }
 

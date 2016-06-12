@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 if(checkInternetConnectivity(getBaseContext()) && checkGPSConnectivity())
                 {
                     //THE UID is saved to SharedPreference
-            SaveToSharedPreference(mUID.getText().toString().trim().toLowerCase());
+            SaveToSharedPreference(mUID.getText().toString());
                     //BackgroudLocationService is started
             startService(new Intent(getBaseContext(),BackgroundLocationService.class));
                     //Toast to display the start service
