@@ -91,7 +91,7 @@ public class BackgroundLocationService extends Service implements
         final String MyPREFERENCES = "MySavedUID" ;
         SharedPreferences prefs = getSharedPreferences(MyPREFERENCES,
                 MODE_PRIVATE);
-        String string = prefs.getString("UID","6666666");//Default Value
+        String string = prefs.getString("UID","anu solar");//Default Value
         return string;
     }
 
@@ -160,8 +160,8 @@ public class BackgroundLocationService extends Service implements
                 );
 
         Notification notification = new Notification.Builder(this)
-                .setContentTitle("Gulzar is awesome")
-                .setContentText("You are being watched by NSA")
+                .setContentTitle("Anu Solar")
+                .setContentText("You are being tracked")
                 .setSmallIcon(R.drawable.ic_mood_black_24dp)
                 .setContentIntent(resultPendingIntent)
                 .build();

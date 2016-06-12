@@ -79,14 +79,14 @@ public class MainActivity extends AppCompatActivity {
     {
 
             //Length of the Id should no be exactly 7 ie Reg ID
-            if(mUID.getText()==null||mUID.getText().length()!=7)
+            if(mUID.getText()==null||mUID.getText().length()<3 || mUID.getText().length()>10 ||nodigits(mUID.getText().toString()))
                Toast.makeText(getBaseContext(),"Enter correct ID",Toast.LENGTH_SHORT).show();
                 else{
                 //Check INTERNET CONNECT AND GPS CONNECTIVITY VALID
                 if(checkInternetConnectivity(getBaseContext()) && checkGPSConnectivity())
                 {
                     //THE UID is saved to SharedPreference
-            SaveToSharedPreference(mUID.getText().toString());
+            SaveToSharedPreference(mUID.getText().toString().trim().toLowerCase());
                     //BackgroudLocationService is started
             startService(new Intent(getBaseContext(),BackgroundLocationService.class));
                     //Toast to display the start service
@@ -103,6 +103,19 @@ public class MainActivity extends AppCompatActivity {
                          showGPSDisabledAlertToUser();
 
             }
+    }
+
+    private boolean nodigits(String text) {
+        if(text==null)
+            return true;
+        text.trim();
+        for(int i=0;i<text.length();i++)
+        {
+            if(!Character.isLetter(text.charAt(i)))
+                return true;
+
+        }
+        return false;
     }
 
     /**
