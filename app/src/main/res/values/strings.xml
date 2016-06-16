@@ -6,4 +6,16 @@
     <string name="submit">Submit</string>
     <string name="ticker_text">Something</string>
     <string name="notification_message" />
+    <string name="loading">LOaDiNG</string>
+    <string name="sign_out">Sign out</string>
+    <string name="create_account">Create Account</string>
+    <string name="sign_in">Sign in</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_email">Email</string>
+    <string name="signed_out">Signed out</string>
+    <string name="emailpassword_title_text">Email Password Title</string>
+    <string name="firebase_status_fmt">Firebase User: %s</string>
+    <string name="firebase_user_management">Firebase User Management</string>
+    <string name="emailpassword_status_fmt">Email User: %s</string>
+    <string name="label_emailpassword">Email Password</string>
 </resources>
