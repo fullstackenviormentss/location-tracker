@@ -191,6 +191,7 @@ public class BackgroundLocationService extends Service implements
         EmployeeIDRef.child("lang").setValue(lang);
         EmployeeIDRef.child("time").setValue(currentDateandTime);
 
+
     }
 
     @Override
