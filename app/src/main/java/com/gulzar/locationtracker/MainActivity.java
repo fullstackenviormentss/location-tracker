@@ -24,25 +24,38 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG ="gulzar";
+    private static final String TAG ="gulzarxxxy";
     //UI COMPONENTS
     private Button mServiceButton;
     private EditText mUID;
     private EditText mPswd;
     Toolbar mToolbar;
 
+
     //SHARED PREFERENCE COMPONENT
     public static final String MyPREFERENCES = "MySavedUID" ;
     SharedPreferences msharedpreferences;
+
+    //FireBase Auth
+    // [START declare_auth]
+    public FirebaseAuth mAuth;
+    // [END declare_auth]
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+       mAuth=FirebaseAuth.getInstance();
+
+        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+
+        Log.d(TAG,user.getDisplayName());
 
         if(!isMyServiceRunning(BackgroundLocationService.class))
         {
@@ -56,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         mUID=(EditText)findViewById(R.id.input_id);
         mToolbar=(Toolbar)findViewById(R.id.tool_bar);
         mPswd=(EditText)findViewById(R.id.input_pswd);
+
 
 
 

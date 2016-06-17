@@ -18,4 +18,6 @@
     <string name="firebase_user_management">Firebase User Management</string>
     <string name="emailpassword_status_fmt">Email User: %s</string>
     <string name="label_emailpassword">Email Password</string>
+    <string name="enter_user_name">Enter User</string>
+    <string name="update_user">Update User</string>
 </resources>
