@@ -29,6 +29,7 @@
             >
 
             <EditText
+                android:visibility="gone"
                 android:textStyle="bold"
                 android:textSize="32sp"
                 android:inputType="textPersonName"
@@ -66,7 +67,7 @@
             android:id="@+id/startservice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/submit"
+            android:text="Monitor"
             android:layout_alignParentRight="true"
             /></RelativeLayout>
 

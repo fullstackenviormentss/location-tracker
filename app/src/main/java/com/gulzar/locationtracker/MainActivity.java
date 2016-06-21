@@ -37,10 +37,6 @@ public class MainActivity extends AppCompatActivity {
     Toolbar mToolbar;
 
 
-    //SHARED PREFERENCE COMPONENT
-    public static final String MyPREFERENCES = "MySavedUID" ;
-    SharedPreferences msharedpreferences;
-
     //FireBase Auth
     // [START declare_auth]
     public FirebaseAuth mAuth;
@@ -89,48 +85,37 @@ public class MainActivity extends AppCompatActivity {
     /**
      * This method is called when the user clicks the submit button!!
      */
+    public boolean ValidateForm()
+    {
+      boolean valid=true;
+        if(!checkInternetConnectivity(getBaseContext()))
+        {
+            displaySnackBarNoConnectivity();
+            valid=false;
+        }
+        if(!checkGPSConnectivity())
+        {
+            showGPSDisabledAlertToUser();
+            valid=false;
+        }
+
+        return valid;
+
+
+    }
     public void SubmitClicked(View view)
     {
 
-            //Length of the Id should no be exactly 7 ie Reg ID
-            if(mUID.getText()==null||mUID.getText().length()<3 || mUID.getText().length()>10 ||nodigits(mUID.getText().toString()))
-               Toast.makeText(getBaseContext(),"Enter correct ID",Toast.LENGTH_SHORT).show();
-                else{
-                //Check INTERNET CONNECT AND GPS CONNECTIVITY VALID
-                if(checkInternetConnectivity(getBaseContext()) && checkGPSConnectivity())
-                {
-                    //THE UID is saved to SharedPreference
-            SaveToSharedPreference(mUID.getText().toString());
-                    //BackgroudLocationService is started
-            startService(new Intent(getBaseContext(),BackgroundLocationService.class));
-                    //Toast to display the start service
-            Toast.makeText(getBaseContext(),"Service started",Toast.LENGTH_SHORT).show();
-                    //UI disabled when the service is started
-                    EnableDisableUI(false);
-                }
-                //Net Connectivity failure ;displays a snack bar.
-                else if(!checkInternetConnectivity(getBaseContext())){
-                    hideKeyboard(this);
-                    displaySnackBarNoConnectivity();}
-                //GPS disabled ; displays a dialogbox to enable it.
-                     if(!checkGPSConnectivity())
-                         showGPSDisabledAlertToUser();
 
-            }
-    }
-
-    private boolean nodigits(String text) {
-        if(text==null)
-            return true;
-        text.trim();
-        for(int i=0;i<text.length();i++)
-        {
-            if(!Character.isLetter(text.charAt(i)))
-                return true;
-
+        if(ValidateForm()) {
+            //BackgroudLocationService is started
+            startService(new Intent(getBaseContext(), BackgroundLocationService.class));
+            //Toast to display the start service
+            Toast.makeText(getBaseContext(), "Service started", Toast.LENGTH_SHORT).show();
         }
-        return false;
+
     }
+
 
     /**
      * Display the GPS enable DialogBox to user
@@ -224,17 +209,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * SAVES UID TO SHARED PREFERENCE WHICH CAN BE ACCESS LATER BY BackgroudLocationService Service
-     * Context notPrivate*/
-    private void SaveToSharedPreference(String UID) {
-        msharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=msharedpreferences.edit();
-        editor.putString("UID",UID);
-        editor.commit();
-
-    }
-
-    /**
      * Service is running or not checker
      * Return true if the service is presently running.
      */
@@ -257,14 +231,14 @@ public class MainActivity extends AppCompatActivity {
         if(!flag)
         {
             mServiceButton.setEnabled(false);
-            mUID.setText(ReadFromSharedPreference());
+            //mUID.setText(ReadFromSharedPreference());
             mUID.setEnabled(false);
             mPswd.setEnabled(false);
         }
         else
         {
             mServiceButton.setEnabled(true);
-            mUID.setEnabled(true);
+         //   mUID.setEnabled(true);
             mUID.setText("");
             mPswd.setEnabled(true);
         }
@@ -299,6 +273,9 @@ public class MainActivity extends AppCompatActivity {
                                 .show();
                         stopService(new Intent(context,BackgroundLocationService.class));
                         EnableDisableUI(true);
+                        mAuth.signOut();
+                        startActivity(new Intent(context,EmailPasswordActivity.class));
+                        finish();
                     }
                 });
 
@@ -318,26 +295,6 @@ public class MainActivity extends AppCompatActivity {
 
         alertDialog2.show();
 
-    }
-    /**
-     * Hides Keyboard when called
-     */
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-    private String ReadFromSharedPreference() {
-        final String MyPREFERENCES = "MySavedUID" ;
-        SharedPreferences prefs = getSharedPreferences(MyPREFERENCES,
-                MODE_PRIVATE);
-        String string = prefs.getString("UID","6666666");//Default Value
-        return string;
     }
 
 }

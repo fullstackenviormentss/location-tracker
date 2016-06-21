@@ -23,6 +23,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -45,7 +47,8 @@ public class BackgroundLocationService extends Service implements
     private String TAG="gulxxx";
 
     private LocationRequest mLocationRequest;
-
+    public FirebaseAuth mAuth;
+    FirebaseUser user;
     private String mUID;
 
     //Getting Firebase Reference intial i.e https://employee-tracker123.firebaseio.com/EmployeeID
@@ -73,8 +76,10 @@ public class BackgroundLocationService extends Service implements
         super.onCreate();
 
       buildGoogleApiClient();
-      //Get UID from SharedPreference !!
-      mUID= ReadFromSharedPreference();
+      user=FirebaseAuth.getInstance().getCurrentUser();
+      mUID= user.getUid();
+
+
       Log.i(TAG,"UID"+mUID);
 
 
@@ -87,13 +92,6 @@ public class BackgroundLocationService extends Service implements
         servicesAvailable = servicesConnected();
     }
 
-    private String ReadFromSharedPreference() {
-        final String MyPREFERENCES = "MySavedUID" ;
-        SharedPreferences prefs = getSharedPreferences(MyPREFERENCES,
-                MODE_PRIVATE);
-        String string = prefs.getString("UID","6666666");//Default Value
-        return string;
-    }
 
     private void intializefirebase() {
 
@@ -187,6 +185,8 @@ public class BackgroundLocationService extends Service implements
         String currentDateandTime = sdf.format(new Date());
 
         EmployeeIDRef.child("id").setValue(mUID);
+        EmployeeIDRef.child("name").setValue(user.getDisplayName());
+        EmployeeIDRef.child("email").setValue(user.getEmail());
         EmployeeIDRef.child("lat").setValue(lat);
         EmployeeIDRef.child("lang").setValue(lang);
         EmployeeIDRef.child("time").setValue(currentDateandTime);
